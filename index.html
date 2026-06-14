@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget App</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6ff;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .box {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #4f46e5;
+        }
+
+        .summary {
+            margin-top: 30px;
+            background: #6366f1;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .summary h3 {
+            margin-bottom: 8px;
+        }
+
+        .expense-list {
+            margin-top: 30px;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-left: 4px solid #6366f1;
+            margin-top: 10px;
+            background: #fafafa;
+        }
+
+        .actions button {
+            margin-left: 5px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="top">
+
+            <div class="box">
+                <h2>Budget</h2>
+
+                <input type="number" id="budgetInput" placeholder="Enter Total Amount">
+
+                <button onclick="setBudget()">Set Budget</button>
+            </div>
+
+            <div class="box">
+                <h2>Expenses</h2>
+
+                <input type="text" id="expenseTitle" placeholder="Enter Title of Product">
+
+                <input type="number" id="expenseAmount" placeholder="Enter Cost of Product">
+
+                <button onclick="addExpense()">Check Amount</button>
+            </div>
+
+        </div>
+
+        <div class="summary">
+            <div>
+                <h3>Total Budget</h3>
+                <p id="totalBudget">0</p>
+            </div>
+
+            <div>
+                <h3>Expenses</h3>
+                <p id="totalExpenses">0</p>
+            </div>
+
+            <div>
+                <h3>Balance</h3>
+                <p id="balance">0</p>
+            </div>
+        </div>
+
+        <div class="expense-list">
+            <h2>Expense List</h2>
+            <div id="expenseContainer"></div>
+        </div>
+
+    </div>
+
+    <script>
+        let budget = 0;
+        let expenses = [];
+
+        function setBudget() {
+            budget = Number(document.getElementById("budgetInput").value);
+
+            document.getElementById("totalBudget").innerText = budget;
+
+            updateBalance();
+        }
+
+        function addExpense() {
+
+            const title = document.getElementById("expenseTitle").value;
+            const amount = Number(document.getElementById("expenseAmount").value);
+
+            if (title === "" || amount <= 0) {
+                alert("Enter valid data");
+                return;
+            }
+
+            expenses.push({ title, amount });
+
+            document.getElementById("expenseTitle").value = "";
+            document.getElementById("expenseAmount").value = "";
+
+            renderExpenses();
+        }
+
+        function renderExpenses() {
+
+            const container = document.getElementById("expenseContainer");
+            container.innerHTML = "";
+
+            let total = 0;
+
+            expenses.forEach((item, index) => {
+
+                total += item.amount;
+
+                container.innerHTML += `
+        <div class="expense-item">
+            <span>${item.title}</span>
+
+            <span>${item.amount}</span>
+
+            <div class="actions">
+                <button onclick="editExpense(${index})">✏️</button>
+                <button onclick="deleteExpense(${index})">🗑️</button>
+            </div>
+        </div>
+        `;
+            });
+
+            document.getElementById("totalExpenses").innerText = total;
+
+            updateBalance();
+        }
+
+        function updateBalance() {
+
+            const totalExpenses =
+                expenses.reduce((sum, item) => sum + item.amount, 0);
+
+            document.getElementById("balance").innerText =
+                budget - totalExpenses;
+        }
+
+        function deleteExpense(index) {
+
+            expenses.splice(index, 1);
+
+            renderExpenses();
+        }
+
+        function editExpense(index) {
+
+            document.getElementById("expenseTitle").value =
+                expenses[index].title;
+
+            document.getElementById("expenseAmount").value =
+                expenses[index].amount;
+
+            expenses.splice(index, 1);
+
+            renderExpenses();
+        }
+    </script>
+
+</body>
+
+</html>
